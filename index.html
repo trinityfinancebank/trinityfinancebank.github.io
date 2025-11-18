@@ -9,52 +9,72 @@
 <body>
   <header class="topbar">
     <div class="left">My Dashboard</div>
-    <div class="right">Welcome.... Steven</div>
+    <div class="right" id="profileBtn">Welcome.... Steven</div>
   </header>
 
   <main class="container">
-    <section class="card balance-card">
-      <div class="card-left">
-        <div class="label">ACCOUNT BALANCE</div>
-        <div id="balance" class="big-amount">$71,799,032.65</div>
-      </div>
-      <div class="card-icon red">💵</div>
-    </section>
-
-    <section class="card">
-      <div class="card-left">
-        <div class="label">ACCOUNT TYPE</div>
-        <div class="muted">Fixed Deposit Account</div>
-      </div>
-      <div class="card-icon orange">🧾</div>
-    </section>
-
-    <section class="card">
-      <div class="card-left">
-        <div class="label">TOTAL TRANSACTION</div>
-        <div id="txCount" class="muted">9</div>
-      </div>
-      <div class="card-icon green">⟲</div>
-    </section>
-
-    <section class="card">
-      <div class="card-left">
-        <div class="label">ACCOUNT NUMBER</div>
-        <div id="acctNo" class="acct">7739118821</div>
-      </div>
-      <div class="card-icon blue">💳</div>
-    </section>
-
-    <section class="transactions">
-      <div class="tx-header">
-        <h3>Last 10 Transaction History</h3>
-        <div class="tx-actions">
-          <input id="search" placeholder="Search reference or amount" />
-          <button id="downloadCsv">Download CSV</button>
-          <button id="addDemo">Add Demo Tx</button>
+    <!-- Home Page -->
+    <section id="home-page" class="page">
+      <section class="card balance-card">
+        <div class="card-left">
+          <div class="label">ACCOUNT BALANCE</div>
+          <div id="balance" class="big-amount">$71,799,032.65</div>
         </div>
-      </div>
+        <div class="card-icon red">💵</div>
+      </section>
 
+      <section class="card">
+        <div class="card-left">
+          <div class="label">ACCOUNT TYPE</div>
+          <div class="muted">Fixed Deposit Account</div>
+        </div>
+        <div class="card-icon orange">🧾</div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="label">TOTAL TRANSACTION</div>
+          <div id="txCount" class="muted">9</div>
+        </div>
+        <div class="card-icon green">⟲</div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="label">ACCOUNT NUMBER</div>
+          <div id="acctNo" class="acct">7739118821</div>
+        </div>
+        <div class="card-icon blue">💳</div>
+      </section>
+
+      <section class="transactions card">
+        <div class="tx-header">
+          <h3>Last 10 Transaction History</h3>
+          <div class="tx-actions">
+            <a href="#" id="viewAll" class="link">View all</a>
+          </div>
+        </div>
+
+        <table id="txPreview" class="tx-table">
+          <thead>
+            <tr><th>#</th><th>REFERENCE</th><th>AMOUNT</th><th>TYPE</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- Transactions Page -->
+    <section id="transactions-page" class="page hidden">
+      <div class="page-header">
+        <button class="back-btn" id="backFromTx">← Back</button>
+        <h3>Transaction History</h3>
+      </div>
+      <div class="tx-controls">
+        <input id="search" placeholder="Search reference or amount" />
+        <button id="downloadCsv">Download CSV</button>
+        <button id="addDemo">Add Demo Tx</button>
+      </div>
       <table id="txTable" class="tx-table">
         <thead>
           <tr><th>#</th><th>REFERENCE</th><th>AMOUNT</th><th>TYPE</th></tr>
@@ -62,13 +82,84 @@
         <tbody></tbody>
       </table>
     </section>
+
+    <!-- Send Page -->
+    <section id="send-page" class="page hidden">
+      <div class="page-header">
+        <h3>Send Money</h3>
+      </div>
+      <form id="sendForm" class="card form-card">
+        <div class="form-row">
+          <label>Recipient Name</label>
+          <input id="recipientName" required />
+        </div>
+        <div class="form-row">
+          <label>Account Number</label>
+          <input id="recipientAccount" required />
+        </div>
+        <div class="form-row">
+          <label>Routing / Bank Code</label>
+          <input id="recipientRouting" required />
+        </div>
+        <div class="form-row">
+          <label>Bank Name</label>
+          <input id="recipientBank" required />
+        </div>
+        <div class="form-row">
+          <label>Amount (USD)</label>
+          <input id="sendAmount" type="number" min="1" required />
+        </div>
+        <div class="form-row">
+          <label>Reference / Note</label>
+          <input id="sendRef" />
+        </div>
+        <div class="form-row">
+          <button id="sendBtn" type="button" class="primary">Send</button>
+        </div>
+        <div id="sendMessage" class="muted"></div>
+      </form>
+
+      <section class="card" style="margin-top:12px;">
+        <h4>Recent Transfers</h4>
+        <table id="recentTransfers" class="tx-table"><tbody></tbody></table>
+      </section>
+    </section>
+
+    <!-- Card Page -->
+    <section id="card-page" class="page hidden">
+      <div class="page-header">
+        <h3>Cards</h3>
+      </div>
+      <section class="card">
+        <div class="card-left">
+          <div class="label">VISA •••• 1234</div>
+          <div class="muted">Expiry 09/28</div>
+        </div>
+        <div class="card-icon purple">💳</div>
+      </section>
+      <div style="margin-top:12px;">Card controls (freeze, show details) can be added here.</div>
+    </section>
+
+    <!-- Profile Page -->
+    <section id="profile-page" class="page hidden">
+      <div class="page-header">
+        <h3>Profile</h3>
+      </div>
+      <section class="card form-card">
+        <div class="form-row"><label>Name</label><input id="profName" value="Steven" /></div>
+        <div class="form-row"><label>Email</label><input id="profEmail" value="steven@example.com" /></div>
+        <div class="form-row"><label>Phone</label><input id="profPhone" value="(504) 499-5059" /></div>
+        <div class="form-row"><button id="saveProfile" class="primary">Save Profile</button></div>
+      </section>
+    </section>
+
   </main>
 
   <nav class="bottom-nav">
-    <button class="nav-btn"><span class="dot red"></span><div>Home</div></button>
-    <button class="nav-btn"><span class="dot green"></span><div>Investment</div></button>
-    <button class="nav-btn"><span class="dot orange"></span><div>Send</div></button>
-    <button class="nav-btn"><span class="dot purple"></span><div>Card</div></button>
+    <button class="nav-btn" data-page="home-page"><span class="dot red"></span><div>Home</div></button>
+    <button class="nav-btn" data-page="transactions-page"><span class="dot green"></span><div>Transactions</div></button>
+    <button class="nav-btn" data-page="send-page"><span class="dot orange"></span><div>Send</div></button>
+    <button class="nav-btn" data-page="card-page"><span class="dot purple"></span><div>Card</div></button>
   </nav>
 
   <script src="app.js"></script>

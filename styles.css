@@ -2,7 +2,7 @@
   --bg:#f4f5f8;
   --card:#ffffff;
   --muted:#6b6f76;
-  --accent:#5b6cf6;
+  --accent:#5b6cf6; /* purple header */
 }
 *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial;margin:0;padding:0}
 body{background:var(--bg);color:#222;min-height:100vh;display:flex;flex-direction:column}
@@ -18,6 +18,7 @@ body{background:var(--bg);color:#222;min-height:100vh;display:flex;flex-directio
 .card-icon.orange{background:linear-gradient(135deg,#ff8a4e,#ff6a00)}
 .card-icon.green{background:linear-gradient(135deg,#3ad29f,#13c07c)}
 .card-icon.blue{background:linear-gradient(135deg,#4da8ff,#2b88ff)}
+.card-icon.purple{background:linear-gradient(135deg,#7c6cff,#6b4bff)}
 
 .transactions{margin-top:6px;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(30,40,60,0.04)}
 .tx-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -31,6 +32,17 @@ body{background:var(--bg);color:#222;min-height:100vh;display:flex;flex-directio
 .badge{padding:6px 8px;border-radius:8px;color:#fff;font-weight:600;font-size:12px}
 .badge.debit{background:#ff4d5a}
 .badge.credit{background:#2ecc71}
+
+.hidden{display:none}
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.back-btn{background:transparent;border:none;font-size:15px;cursor:pointer;color:#5b6cf6}
+.tx-controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.form-card{display:block}
+.form-row{display:flex;flex-direction:column;margin-bottom:10px}
+.form-row label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.form-row input{padding:10px;border-radius:8px;border:1px solid #e0e3e9}
+.primary{background:#5b6cf6;color:#fff;padding:10px;border-radius:8px;border:none;cursor:pointer}
+.link{color:#5b6cf6;text-decoration:none}
 
 .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;background:transparent;display:flex;gap:18px}
 .nav-btn{background:#fff;border-radius:30px;padding:8px 14px;box-shadow:0 8px 20px rgba(40,50,80,0.08);border:none;display:flex;flex-direction:column;align-items:center;gap:6px}
