@@ -1,4 +1,4 @@
-// Transactions and multi-page navigation demo with localStorage persistence and confirmation modal
+// Robust transactions / navigation / modal script with stable event handling and persistence
 
 const STORAGE_KEYS = {
   transactions: 'tfb_transactions_v1',
@@ -34,14 +34,17 @@ function loadFromStorage(){
     const prof = localStorage.getItem(STORAGE_KEYS.profile);
     if(prof){
       const p = JSON.parse(prof);
-      document.getElementById('profName').value = p.name || 'Steven';
-      document.getElementById('profEmail').value = p.email || 'steven@example.com';
-      document.getElementById('profPhone').value = p.phone || '(504) 499-5059';
-      document.getElementById('profileBtn').textContent = 'Welcome.... ' + (p.name || 'Steven');
+      const nameEl = document.getElementById('profName');
+      const emailEl = document.getElementById('profEmail');
+      const phoneEl = document.getElementById('profPhone');
+      if(nameEl) nameEl.value = p.name || 'Steven';
+      if(emailEl) emailEl.value = p.email || 'steven@example.com';
+      if(phoneEl) phoneEl.value = p.phone || '(504) 499-5059';
+      const profileBtn = document.getElementById('profileBtn');
+      if(profileBtn) profileBtn.textContent = 'Welcome.... ' + (p.name || 'Steven');
     }
   }catch(e){
     console.error('Failed reading storage', e);
-    // fall back to defaults
     balance = 71799032.65;
   }
 }
@@ -55,17 +58,20 @@ function saveToStorage(){
 
 function renderPreview(){
   const tbody = document.querySelector('#txPreview tbody');
+  if(!tbody) return;
   tbody.innerHTML = '';
   transactions.slice(0,5).forEach((t,i)=>{
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${i+1}</td><td>${t.ref}</td><td>${fmt(t.amount)}</td><td><span class="badge ${t.type.toLowerCase()}">${t.type}</span></td>`;
     tbody.appendChild(tr);
   });
-  document.getElementById('txCount').textContent = transactions.length;
+  const txCountEl = document.getElementById('txCount');
+  if(txCountEl) txCountEl.textContent = transactions.length;
 }
 
 function renderTable(list = transactions){
   const tbody = document.querySelector('#txTable tbody');
+  if(!tbody) return;
   tbody.innerHTML = '';
   list.forEach((t,i)=>{
     const tr = document.createElement('tr');
@@ -76,7 +82,8 @@ function renderTable(list = transactions){
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=> p.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
   window.scrollTo(0,0);
 }
 
@@ -92,7 +99,9 @@ function downloadCsv(list){
 }
 
 function applyFilter(){
-  const q = document.getElementById('search').value.trim().toLowerCase();
+  const searchEl = document.getElementById('search');
+  if(!searchEl) return renderTable();
+  const q = searchEl.value.trim().toLowerCase();
   const filtered = transactions.filter(t=>{
     if(!q) return true;
     return t.ref.toLowerCase().includes(q) || String(t.amount).toLowerCase().includes(q);
@@ -113,29 +122,41 @@ function addDemoTransaction(){
 
 function updateBalance(delta){
   balance = Number((balance + delta).toFixed(2));
-  document.getElementById('balance').textContent = fmt(balance);
+  const balEl = document.getElementById('balance');
+  if(balEl) balEl.textContent = fmt(balance);
   saveToStorage();
 }
 
-// Confirmation modal flow
+// Modal helpers: attach/remove listeners robustly
 function showConfirmModal(details, onConfirm){
   const overlay = document.getElementById('confirmModal');
   const body = document.getElementById('confirmBody');
-  body.innerHTML = `<p><strong>To:</strong> ${details.name} (${details.bank} — ${details.account})</p><p><strong>Amount:</strong> ${fmt(details.amount)}</p><p><strong>Ref:</strong> ${details.ref}</p>`;
+  if(!overlay || !body) return;
+  body.innerHTML = `<p><strong>To:</strong> ${details.name} (${details.bank} — ${details.acct})</p><p><strong>Amount:</strong> ${fmt(details.amount)}</p><p><strong>Ref:</strong> ${details.ref}</p>`;
   overlay.classList.remove('hidden');
+
   const ok = document.getElementById('confirmOk');
   const cancel = document.getElementById('confirmCancel');
 
-  function cleanup(){
-    overlay.classList.add('hidden');
-    ok.removeEventListener('click', doConfirm);
-    cancel.removeEventListener('click', doCancel);
-  }
+  // Handler functions (closed over so we can remove them)
+  function overlayClick(e){ if(e.target === overlay) { cleanup(); } }
+  function onKey(e){ if(e.key === 'Escape') cleanup(); }
   function doConfirm(){ cleanup(); onConfirm(); }
   function doCancel(){ cleanup(); }
 
-  ok.addEventListener('click', doConfirm);
-  cancel.addEventListener('click', doCancel);
+  function cleanup(){
+    overlay.classList.add('hidden');
+    overlay.removeEventListener('click', overlayClick);
+    document.removeEventListener('keydown', onKey);
+    if(ok) ok.removeEventListener('click', doConfirm);
+    if(cancel) cancel.removeEventListener('click', doCancel);
+  }
+
+  // Attach
+  overlay.addEventListener('click', overlayClick);
+  document.addEventListener('keydown', onKey);
+  if(ok) ok.addEventListener('click', doConfirm);
+  if(cancel) cancel.addEventListener('click', doCancel);
 }
 
 function handleSendValidation(){
@@ -146,21 +167,21 @@ function handleSendValidation(){
   const amount = Number(document.getElementById('sendAmount').value);
   const ref = document.getElementById('sendRef').value.trim() || ('TRX' + Math.random().toString(36).slice(2,10));
   const msg = document.getElementById('sendMessage');
-  msg.textContent = '';
+  if(msg) msg.textContent = '';
 
   if(!name || !acct || !routing || !bank || !amount || amount <= 0){
-    msg.textContent = 'Please fill all fields with valid values.';
+    if(msg) msg.textContent = 'Please fill all fields with valid values.';
     return null;
   }
   if(amount > balance){
-    msg.textContent = 'Insufficient funds for this demo transfer.';
+    if(msg) msg.textContent = 'Insufficient funds for this demo transfer.';
     return null;
   }
   return {name, acct, routing, bank, amount, ref};
 }
 
 function performSend(details){
-  const t = {ref: details.ref, amount: details.amount, type: 'Debit', to: \\`${details.bank} | ${details.acct}\`};
+  const t = {ref: details.ref, amount: details.amount, type: 'Debit', to: `${details.bank} | ${details.acct}`};
   transactions.unshift(t);
   updateBalance(-details.amount);
   saveToStorage();
@@ -169,46 +190,74 @@ function performSend(details){
 
   // add to recent transfers
   const rtbody = document.querySelector('#recentTransfers tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${details.ref}</td><td>${details.name}</td><td>${fmt(details.amount)}</td>`;
-  rtbody.prepend(tr);
+  if(rtbody){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${details.ref}</td><td>${details.name}</td><td>${fmt(details.amount)}</td>`;
+    rtbody.prepend(tr);
+  }
 
-  document.getElementById('sendMessage').textContent = 'Transfer simulated successfully (demo).';
-  document.getElementById('sendForm').reset();
+  const msgEl = document.getElementById('sendMessage');
+  if(msgEl) msgEl.textContent = 'Transfer simulated successfully (demo).';
+  const form = document.getElementById('sendForm');
+  if(form) form.reset();
 }
 
-// init
+// Initialize
 window.addEventListener('DOMContentLoaded', ()=>{
   loadFromStorage();
-  document.getElementById('balance').textContent = fmt(balance);
+  const balEl = document.getElementById('balance');
+  if(balEl) balEl.textContent = fmt(balance);
   renderPreview();
   renderTable(transactions);
 
-  // nav buttons
-  document.querySelectorAll('.nav-btn').forEach(b=>{
-    b.addEventListener('click', ()=> showPage(b.dataset.page));
-  });
+  // nav delegation: attach once to the nav container for robustness
+  const bottomNav = document.querySelector('.bottom-nav');
+  if(bottomNav){
+    bottomNav.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.nav-btn');
+      if(!btn) return;
+      const page = btn.dataset.page;
+      if(page) showPage(page);
+    });
+  } else {
+    // fallback: attach to individual buttons
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.addEventListener('click', ()=> { if(b.dataset.page) showPage(b.dataset.page); });
+    });
+  }
 
-  // view all
-  document.getElementById('viewAll').addEventListener('click', (e)=>{ e.preventDefault(); showPage('transactions-page'); });
-  document.getElementById('backFromTx').addEventListener('click', ()=> showPage('home-page'));
+  // view all link
+  const viewAll = document.getElementById('viewAll');
+  if(viewAll) viewAll.addEventListener('click', (e)=>{ e.preventDefault(); showPage('transactions-page'); });
 
-  document.getElementById('downloadCsv').addEventListener('click', ()=> downloadCsv(transactions));
-  document.getElementById('addDemo').addEventListener('click', ()=> addDemoTransaction());
-  document.getElementById('search').addEventListener('input', ()=> applyFilter());
+  const backFromTx = document.getElementById('backFromTx');
+  if(backFromTx) backFromTx.addEventListener('click', ()=> showPage('home-page'));
 
-  document.getElementById('sendBtn').addEventListener('click', ()=>{
+  const downloadCsvBtn = document.getElementById('downloadCsv');
+  if(downloadCsvBtn) downloadCsvBtn.addEventListener('click', ()=> downloadCsv(transactions));
+
+  const addDemoBtn = document.getElementById('addDemo');
+  if(addDemoBtn) addDemoBtn.addEventListener('click', ()=> addDemoTransaction());
+
+  const searchEl = document.getElementById('search');
+  if(searchEl) searchEl.addEventListener('input', ()=> applyFilter());
+
+  const sendBtn = document.getElementById('sendBtn');
+  if(sendBtn) sendBtn.addEventListener('click', ()=>{
     const details = handleSendValidation();
     if(!details) return;
     showConfirmModal(details, ()=> performSend(details));
   });
 
-  document.getElementById('profileBtn').addEventListener('click', ()=> showPage('profile-page'));
-  document.getElementById('saveProfile').addEventListener('click', (e)=>{ 
+  const profileBtn = document.getElementById('profileBtn');
+  if(profileBtn) profileBtn.addEventListener('click', ()=> showPage('profile-page'));
+
+  const saveProfileBtn = document.getElementById('saveProfile');
+  if(saveProfileBtn) saveProfileBtn.addEventListener('click', (e)=>{ 
     e.preventDefault();
     const p = { name: document.getElementById('profName').value.trim(), email: document.getElementById('profEmail').value.trim(), phone: document.getElementById('profPhone').value.trim() };
     localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(p));
-    document.getElementById('profileBtn').textContent = 'Welcome.... ' + (p.name || 'Steven');
+    const profileBtnEl = document.getElementById('profileBtn');
+    if(profileBtnEl) profileBtnEl.textContent = 'Welcome.... ' + (p.name || 'Steven');
   });
-
 });
