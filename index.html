@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trinity Finance Bank — Dashboard (Demo)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="left">My Dashboard</div>
+    <div class="right">Welcome.... Steven</div>
+  </header>
+
+  <main class="container">
+    <section class="card balance-card">
+      <div class="card-left">
+        <div class="label">ACCOUNT BALANCE</div>
+        <div id="balance" class="big-amount">$71,799,032.65</div>
+      </div>
+      <div class="card-icon red">💵</div>
+    </section>
+
+    <section class="card">
+      <div class="card-left">
+        <div class="label">ACCOUNT TYPE</div>
+        <div class="muted">Fixed Deposit Account</div>
+      </div>
+      <div class="card-icon orange">🧾</div>
+    </section>
+
+    <section class="card">
+      <div class="card-left">
+        <div class="label">TOTAL TRANSACTION</div>
+        <div id="txCount" class="muted">9</div>
+      </div>
+      <div class="card-icon green">⟲</div>
+    </section>
+
+    <section class="card">
+      <div class="card-left">
+        <div class="label">ACCOUNT NUMBER</div>
+        <div id="acctNo" class="acct">7739118821</div>
+      </div>
+      <div class="card-icon blue">💳</div>
+    </section>
+
+    <section class="transactions">
+      <div class="tx-header">
+        <h3>Last 10 Transaction History</h3>
+        <div class="tx-actions">
+          <input id="search" placeholder="Search reference or amount" />
+          <button id="downloadCsv">Download CSV</button>
+          <button id="addDemo">Add Demo Tx</button>
+        </div>
+      </div>
+
+      <table id="txTable" class="tx-table">
+        <thead>
+          <tr><th>#</th><th>REFERENCE</th><th>AMOUNT</th><th>TYPE</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn"><span class="dot red"></span><div>Home</div></button>
+    <button class="nav-btn"><span class="dot green"></span><div>Investment</div></button>
+    <button class="nav-btn"><span class="dot orange"></span><div>Send</div></button>
+    <button class="nav-btn"><span class="dot purple"></span><div>Card</div></button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
