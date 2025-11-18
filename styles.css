@@ -42,15 +42,22 @@ body{background:var(--bg);color:#222;min-height:100vh;display:flex;flex-directio
 .form-row label{font-size:12px;color:var(--muted);margin-bottom:6px}
 .form-row input{padding:10px;border-radius:8px;border:1px solid #e0e3e9}
 .primary{background:#5b6cf6;color:#fff;padding:10px;border-radius:8px;border:none;cursor:pointer}
+.secondary{background:#e9eefb;color:#5b6cf6;padding:10px;border-radius:8px;border:none;cursor:pointer}
 .link{color:#5b6cf6;text-decoration:none}
 
 .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;background:transparent;display:flex;gap:18px}
 .nav-btn{background:#fff;border-radius:30px;padding:8px 14px;box-shadow:0 8px 20px rgba(40,50,80,0.08);border:none;display:flex;flex-direction:column;align-items:center;gap:6px}
 .nav-btn .dot{display:block;width:26px;height:26px;border-radius:50%}
+.icon{width:20px;height:20px;fill:#5b6cf6}
 .dot.red{background:linear-gradient(135deg,#ff6b6b,#ff4b4b)}
 .dot.green{background:linear-gradient(135deg,#3ad29f,#13c07c)}
 .dot.orange{background:linear-gradient(135deg,#ff8a4e,#ff6a00)}
 .dot.purple{background:linear-gradient(135deg,#7c6cff,#6b4bff)}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,6,12,0.45);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{background:#fff;padding:18px;border-radius:12px;max-width:420px;width:92%;box-shadow:0 20px 40px rgba(10,20,40,0.2)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 
 @media(min-width:880px){
   .container{max-width:760px;margin:24px auto}
